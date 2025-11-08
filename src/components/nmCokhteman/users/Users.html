@@ -1,0 +1,165 @@
+<!-- ===== change-password modal (insert anywhere inside <body>) ===== -->
+<!-- Trigger (مثلاً در منو یا پروفایل) -->
+<button id="openChangePwd" class="btn" style="min-width:100px;padding:8px;margin:8px">🔒 تغییر رمز</button>
+
+<!-- Modal backdrop -->
+<div id="changePwdModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1200;align-items:center;justify-content:center;padding:18px;">
+  <div style="width:100%;max-width:420px;background:#fff;border-radius:12px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,0.2);direction:rtl;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <h3 style="margin:0;font-size:16px">تغییر رمز عبور</h3>
+      <button id="closeChangePwd" aria-label="بستن" style="background:none;border:none;font-size:20px;cursor:pointer">✕</button>
+    </div>
+
+    <form id="changePwdForm" autocomplete="off" novalidate>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <!-- current -->
+        <label style="font-size:13px">رمز فعلی
+          <div style="position:relative">
+            <input id="currentPwd" type="password" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd" />
+            <button type="button" class="togglePwd" data-target="currentPwd" style="position:absolute;left:8px;top:8px;background:none;border:none;cursor:pointer">👁️</button>
+          </div>
+        </label>
+
+        <!-- new -->
+        <label style="font-size:13px">رمز جدید
+          <div style="position:relative">
+            <input id="newPwd" type="password" required minlength="8" style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd" />
+            <button type="button" class="togglePwd" data-target="newPwd" style="position:absolute;left:8px;top:8px;background:none;border:none;cursor:pointer">👁️</button>
+          </div>
+        </label>
+
+        <!-- confirm -->
+        <label style="font-size:13px">تکرار رمز جدید
+          <div style="position:relative">
+            <input id="confirmPwd" type="password" required style="width:100%;padding:10px;border-radius:8px;border:1px solid #ddd" />
+            <button type="button" class="togglePwd" data-target="confirmPwd" style="position:absolute;left:8px;top:8px;background:none;border:none;cursor:pointer">👁️</button>
+          </div>
+        </label>
+
+        <!-- password strength -->
+        <div id="pwdStrength" style="height:8px;background:#eee;border-radius:6px;overflow:hidden">
+          <div id="pwdStrengthBar" style="height:100%;width:0%;background:#ddd;transition:width .2s"></div>
+        </div>
+        <div id="pwdCriteria" style="font-size:12px;color:#666;display:flex;flex-direction:column;gap:4px">
+          <div id="cLen">• حداقل ۸ کاراکتر</div>
+          <div id="cUpper">• یک حرف بزرگ</div>
+          <div id="cNumber">• یک عدد</div>
+          <div id="cSpecial">• یک کاراکتر ویژه (مثلاً !@#)</div>
+        </div>
+
+        <!-- feedback -->
+        <div id="changeMsg" role="status" style="min-height:20px;font-size:13px;color:#b33"></div>
+
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px;">
+          <button type="button" id="cancelChangePwd" style="background:#f3f3f3;border:1px solid #ddd;padding:8px 12px;border-radius:8px;cursor:pointer">انصراف</button>
+          <button type="submit" id="submitChangePwd" style="background:var(--color-primary, #00BCD4);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer">ثبت تغییر</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ===== change-password logic (client-side simulation) ===== */
+(function(){
+  const openBtn = document.getElementById('openChangePwd');
+  const modal = document.getElementById('changePwdModal');
+  const closeBtn = document.getElementById('closeChangePwd');
+  const cancelBtn = document.getElementById('cancelChangePwd');
+  const form = document.getElementById('changePwdForm');
+  const cur = document.getElementById('currentPwd');
+  const neu = document.getElementById('newPwd');
+  const conf = document.getElementById('confirmPwd');
+  const msg = document.getElementById('changeMsg');
+  const bar = document.getElementById('pwdStrengthBar');
+  const cLen = document.getElementById('cLen');
+  const cUpper = document.getElementById('cUpper');
+  const cNumber = document.getElementById('cNumber');
+  const cSpecial = document.getElementById('cSpecial');
+
+  // open / close
+  openBtn.addEventListener('click', ()=> { modal.style.display='flex'; msg.textContent=''; form.reset(); updateStrength(); });
+  closeBtn.addEventListener('click', ()=> modal.style.display='none');
+  cancelBtn.addEventListener('click', ()=> modal.style.display='none');
+  modal.addEventListener('click', (e)=> { if(e.target===modal) modal.style.display='none'; });
+
+  // toggle visibility
+  document.querySelectorAll('.togglePwd').forEach(btn=>{
+    btn.addEventListener('click', (ev)=>{
+      const target = document.getElementById(btn.dataset.target);
+      if(target.type==='password'){ target.type='text'; btn.textContent='🙈'; }
+      else { target.type='password'; btn.textContent='👁️'; }
+    });
+  });
+
+  // password strength check
+  function checkStrength(p){
+    const rules = {
+      len: p.length>=8,
+      upper: /[A-Z\u0600-\u06FF]/.test(p) && /[A-Z]/.test(p) || /[آ-ی]/.test(p), // accept persian letters or latin uppercase as "letter"
+      num: /\d/.test(p),
+      special: /[!@#\$%\^&\*\(\)\-_\+=\[\]\{\};:'"\\|,.<>\/?]/.test(p)
+    };
+    return rules;
+  }
+  function updateStrength(){
+    const p = neu.value || '';
+    const r = checkStrength(p);
+    const score = (r.len + r.upper + r.num + r.special) / 4;
+    bar.style.width = `${Math.round(score*100)}%`;
+    bar.style.background = score<=0.25 ? '#e74c3c' : score<=0.5 ? '#f39c12' : score<=0.75 ? '#27ae60' : '#00897b';
+    cLen.style.color = r.len ? '#00897b' : '#666';
+    cUpper.style.color = r.upper ? '#00897b' : '#666';
+    cNumber.style.color = r.num ? '#00897b' : '#666';
+    cSpecial.style.color = r.special ? '#00897b' : '#666';
+  }
+  neu.addEventListener('input', updateStrength);
+
+  // submit (simulate API)
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    msg.style.color = '#b33';
+    msg.textContent = '';
+
+    const current = cur.value.trim();
+    const newp = neu.value.trim();
+    const confp = conf.value.trim();
+
+    if(!current || !newp || !confp){ msg.textContent = 'لطفاً تمام فیلدها را تکمیل کنید.'; return; }
+    if(newp !== confp){ msg.textContent = 'رمز جدید و تکرار آن برابر نیستند.'; return; }
+
+    const rules = checkStrength(newp);
+    if(!(rules.len && rules.num && rules.special && rules.upper)){
+      msg.textContent = 'رمز جدید شرایط امنیتی را ندارد. معیارها را رعایت کنید.';
+      return;
+    }
+
+    // disable UI
+    const submitBtn = document.getElementById('submitChangePwd');
+    submitBtn.disabled = true; submitBtn.style.opacity = '0.6'; msg.textContent = 'در حال ارسال درخواست...';
+
+    // SIMULATION: در اینجا باید درخواست به API ارسال شود (HTTPS, POST, با توکن کاربر)
+    // مثال: fetch('/api/change-password', {method:'POST', headers:{Authorization:'Bearer ...'}, body: JSON.stringify({current, new: newp})})
+    setTimeout(()=>{
+      // شبیه‌سازی پاسخ موفق/ناموفق
+      const serverOk = (current === 'current_pass_example'); // برای نمونه فرض می‌کنیم current_pass_example رمز فعلی معتبر است
+      if(!serverOk){
+        msg.style.color = '#b33';
+        msg.textContent = 'رمز فعلی اشتباه است.';
+        submitBtn.disabled = false; submitBtn.style.opacity = '1';
+        return;
+      }
+      // موفق
+      msg.style.color = '#0a7';
+      msg.textContent = 'رمز با موفقیت تغییر کرد.';
+      setTimeout(()=>{ modal.style.display='none'; submitBtn.disabled = false; submitBtn.style.opacity = '1'; }, 900);
+    }, 1200);
+  });
+
+  // accessibility: submit on Enter inside confirm
+  conf.addEventListener('keydown', (e)=>{ if(e.key==='Enter') form.dispatchEvent(new Event('submit')); });
+
+  // init
+  updateStrength();
+})();
+</script>

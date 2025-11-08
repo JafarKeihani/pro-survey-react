@@ -1,0 +1,67 @@
+import React, { useState } from "react";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Button,
+  Stack,
+} from "@mui/material";
+
+import MenuIcon from "@mui/icons-material/Menu";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import FormatTextdirectionRToLIcon from "@mui/icons-material/FormatTextdirectionRToL";
+import FormatTextdirectionLToRIcon from "@mui/icons-material/FormatTextdirectionLToR";
+import LogoutButton from "@components/publicComponent/LogoutButton";
+import HeaderTop from "./uiComponent/HeaderTop";
+import Sidebar from "./uiComponent/Sidebar";
+import { useThemeContext } from "@/contexts/ThemeContext";
+
+const Header = () => {
+  const { mode, direction, toggleTheme, toggleDirection } = useThemeContext();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  return (
+    <>
+      <AppBar position="static" color="primary">
+        <Toolbar sx={{ justifyContent: "space-between" }}>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <IconButton color="inherit" onClick={() => setDrawerOpen(true)}>
+              <MenuIcon />
+            </IconButton>
+
+            <Typography variant="h6">ProSurvey</Typography>
+          </Stack>
+
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <IconButton onClick={toggleTheme} color="inherit">
+              {mode === "light" ? <Brightness4Icon /> : <Brightness7Icon />}
+            </IconButton>
+
+            <IconButton onClick={toggleDirection} color="inherit">
+              {direction === "rtl" ? (
+                <FormatTextdirectionLToRIcon />
+              ) : (
+                <FormatTextdirectionRToLIcon />
+              )}
+            </IconButton>
+            <LogoutButton />
+          </Stack>
+        </Toolbar>
+
+        <HeaderTop />
+        <Toolbar />
+      </AppBar>
+
+      {/* ✅ ارسال props صحیح به Sidebar */}
+      <Sidebar
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        direction={direction}
+      />
+    </>
+  );
+};
+
+export default Header;

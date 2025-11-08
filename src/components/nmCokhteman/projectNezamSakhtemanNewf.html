@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>سامانه مدیریت پروژه — Mobile Mock</title>
+<!-- 
+  {/*
+  گر Vazirmatn را محلی نصب نکردی، می‌توانی آن را اضافه کنی.
+       اینجا از fallback استفاده شده.  */} -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== Design tokens (CSS variables) ====== */
+    :root {
+      --color-bg: #ffffff;
+      --color-primary: #00BCD4;
+      --color-text: #222222;
+      --color-border: #E0E0E0;
+      --color-surface: #ffffff;
+      --color-accent: #F5F5F5;
+      --color-warning: #FF9800;
+      --radius: 12px;
+      --gap: 12px;
+      --shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+      --font-farsi: "Vazirmatn", "Segoe UI", Tahoma, sans-serif;
+      --font-en: "Inter", system-ui, Arial, sans-serif;
+      --max-width: 430px;
+      /* mobile target width like iPhone 13 Pro */
+    }
+
+    /* ====== Global reset & layout ====== */
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-farsi);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: var(--max-width);
+      background: var(--color-bg);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--color-border);
+    }
+
+    header.topbar {
+      background: transparent;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    /* Navbar (dropdown) */
+    .nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nav .menu-btn {
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .nav .menu-content {
+      position: relative;
+    }
+
+    .menu-panel {
+      position: absolute;
+      right: 0;
+      top: 44px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow);
+      border-radius: 10px;
+      min-width: 200px;
+      display: none;
+      z-index: 50;
+      padding: 8px;
+    }
+
+    .menu-panel.show {
+      display: block
+    }
+
+    .menu-panel a {
+      display: block;
+      padding: 8px;
+      color: var(--color-text);
+      text-decoration: none;
+      border-radius: 6px;
+    }
+
+    .menu-panel a:hover {
+      background: var(--color-accent)
+    }
+
+    /* Header (title/date/coords/weather) */
+    .header-main {
+      background: var(--color-surface);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .title {
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .meta {
+      font-size: 12px;
+      color: var(--color-text);
+      opacity: 0.8;
+      text-align: left;
+      font-family: var(--font-en);
+    }
+
+    /* Weather compact */
+    .weather {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--color-accent);
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .weather img {
+      width: 28px;
+      height: 28px
+    }
+
+    /* Map placeholder */
+    .map-placeholder {
+      background: #ffeb3b;
+      /* yellow for placeholder as discussed */
+      height: 240px;
+      margin: 12px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #222;
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    /* Management area */
+    .management {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--color-surface);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      flex: 1;
+      min-width: 110px;
+      padding: 10px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--color-border);
+      background: linear-gradient(180deg, #ffffff, #f7f9fa);
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn.primary {
+      background: var(--color-primary);
+      color: #fff;
+      border: none
+    }
+
+    .btn.warn {
+      background: var(--color-warning);
+      color: #fff;
+      border: none
+    }
+
+    .search {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .search input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--color-border);
+      font-size: 14px;
+    }
+
+    /* Project card */
+    .project-card {
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 12px;
+      background: var(--color-surface);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .project-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center
+    }
+
+    .project-title {
+      font-weight: 700
+    }
+
+    .project-fields {
+      font-size: 13px;
+      color: var(--color-text);
+    }
+
+    .field-label {
+      opacity: 0.7;
+      font-size: 12px
+    }
+
+    /* Table view sample */
+    .table {
+      margin: 12px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+
+    .table-row {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      align-items: center;
+      border-bottom: 1px dashed var(--color-border);
+    }
+
+    .table-row:last-child {
+      border-bottom: none
+    }
+
+    .cell {
+      flex: 1;
+      font-size: 13px
+    }
+
+    /* Footer */
+    footer {
+      padding: 12px;
+      text-align: center;
+      background: var(--color-accent);
+      font-size: 13px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    /* small helpers */
+    .muted {
+      opacity: 0.7;
+      font-size: 12px
+    }
+
+    .small {
+      font-size: 12px
+    }
+
+    /* responsive tweaks - mobile first */
+    @media(min-width:480px) {
+      .app {
+        border-radius: 16px
+      }
+
+      .map-placeholder {
+        height: 320px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app" id="app">
+    <!-- Top bar with menu -->
+    <header class="topbar">
+      <div class="nav">
+        <div class="menu-content">
+          <button class="menu-btn" id="menuBtn">منو ▾</button>
+          <div class="menu-panel" id="menuPanel">
+            <a href="#">مدیریت داده‌ها</a>
+            <a href="#">نقشه پروژه‌ها</a>
+            <a href="#">جدول داده‌ها</a>
+            <a href="#">جستجوی پیشرفته</a>
+            <a href="#">تنظیمات</a>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center">
+        <div class="title">سامانه مدیریت پروژه‌های نظام مهندسی</div>
+        <div class="muted small">نسخه: توسعه — جعفر کیهانی</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
+        <div class="muted small" id="gregDate">—</div>
+        <div class="muted small" id="persDate">—</div>
+      </div>
+    </header>
+
+    <!-- Header content: date/coords/weather -->
+    <section class="header-main">
+      <div class="header-row">
+        <div style="display:flex;flex-direction:column;align-items:flex-end">
+          <div class="muted small" id="coords">مختصات: 35.6892°N, 51.3890°E</div>
+          <div class="muted small" id="userStatus">وضعیت: آنلاین</div>
+        </div>
+
+        <div class="weather" id="weatherBox" title="وضعیت هوا">
+          <img
+            src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><circle cx='20' cy='20' r='12' fill='%23FFB300'/></svg>"
+            alt="sun" />
+          <div style="display:flex;flex-direction:column;align-items:flex-end">
+            <div style="font-weight:700">28°C</div>
+            <div class="muted small">آفتابی</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weather slider (sample days) -->
+      <div style="display:flex;gap:8px;overflow:auto;padding-top:6px">
+        <div class="small"
+          style="min-width:80px;background:#fff;border-radius:8px;padding:8px;border:1px solid var(--color-border)">
+          شنبه<br><strong>28°C</strong>
+        </div>
+        <div class="small"
+          style="min-width:80px;background:#fff;border-radius:8px;padding:8px;border:1px solid var(--color-border)">
+          یک‌شنبه<br><strong>27°C</strong>
+        </div>
+        <div class="small"
+          style="min-width:80px;background:#fff;border-radius:8px;padding:8px;border:1px solid var(--color-border)">
+          دوشنبه<br><strong>30°C</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- Map placeholder -->
+    <div class="map-placeholder">🗺️ نقشه در دسترس نیست</div>
+
+    <!-- Management -->
+    <section class="management" aria-label="Management">
+      <div class="btn-row">
+        <label class="btn" for="fileUpload">📥 بارگذاری Excel
+          <input id="fileUpload" type="file" accept=".xlsx,.xls,.csv" style="display:none" />
+        </label>
+
+        <button class="btn" id="downloadBtn">📤 دانلود Excel</button>
+
+        <button class="btn primary" id="addBtn">➕ افزودن</button>
+        <button class="btn" id="editBtn">✏️ ویرایش</button>
+        <button class="btn warn" id="deleteBtn">🗑 حذف</button>
+      </div>
+
+      <div class="search">
+        <input id="searchInput" placeholder="جستجو بر اساس نام مالک یا شماره پروژه..." />
+        <button class="btn" id="searchBtn">🔍</button>
+      </div>
+
+      <div class="project-card" id="projectCard">
+        <div class="project-row">
+          <div>
+            <div class="project-title" id="projOwner">مالک: احمد رضایی</div>
+            <div class="muted small">کد پروژه: <span id="projCode">PRJ-00123</span></div>
+          </div>
+          <div class="muted small">وضعیت: فعال</div>
+        </div>
+
+        <div class="project-fields">
+          <div><span class="field-label">مختصات جهانی:</span> <strong id="projLatLon">35.6892, 51.3890</strong></div>
+          <div><span class="field-label">مختصات UTM:</span> <strong id="projUTM">39S 0345678 3956789</strong></div>
+          <div><span class="field-label">شهر:</span> <strong id="projCity">تهران</strong></div>
+          <div><span class="field-label">آدرس:</span> <strong id="projAddr">خیابان مثال، پلاک 12</strong></div>
+          <div><span class="field-label">تلفن مالک:</span> <strong id="projPhone">0912-123-4567</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Table view sample -->
+    <div class="table" role="table" aria-label="Table of projects">
+      <div class="table-row" style="background:var(--color-accent);font-weight:700">
+        <div class="cell">نام مالک</div>
+        <div class="cell">کد پروژه</div>
+        <div class="cell">وضعیت</div>
+      </div>
+
+      <div class="table-row">
+        <div class="cell">احمد رضایی</div>
+        <div class="cell">PRJ-00123</div>
+        <div class="cell">فعال</div>
+      </div>
+
+      <div class="table-row">
+        <div class="cell">فاطمه موسوی</div>
+        <div class="cell">PRJ-00124</div>
+        <div class="cell">در انتظار</div>
+      </div>
+
+      <div class="table-row">
+        <div class="cell">شرکت مثال</div>
+        <div class="cell">PRJ-00200</div>
+        <div class="cell">تحویل شده</div>
+      </div>
+    </div>
+
+    <footer>© جعفر کیهانی — نسخه توسعه</footer>
+  </div>
+
+  <script>
+    // ==== Utility: show Gregorian + Persian (fa) dates ====
+    function updateDates() {
+      const now = new Date();
+      const greg = new Intl.DateTimeFormat('en-GB', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }).format(now);
+      const pers = new Intl.DateTimeFormat('fa-IR', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }).format(now);
+      document.getElementById('gregDate').textContent = greg;
+      document.getElementById('persDate').textContent = pers;
+    }
+    updateDates();
+
+    // ==== Sample coords (simulate user's coords) ====
+    const userLat = 35.6892,
+      userLon = 51.3890;
+    document.getElementById('coords').textContent = `مختصات: ${userLat.toFixed(4)}°, ${userLon.toFixed(4)}°`;
+
+    // ==== Menu toggle ====
+    const menuBtn = document.getElementById('menuBtn'),
+      menuPanel = document.getElementById('menuPanel');
+    menuBtn.addEventListener('click', () => menuPanel.classList.toggle('show'));
+
+    // ==== Download sample Excel (CSV) ====
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const sample = [
+        ['owner', 'project_code', 'lat', 'lon', 'utm', 'city', 'address', 'phone'],
+        ['احمد رضایی', 'PRJ-00123', '35.6892', '51.3890', '39S 0345678 3956789', 'تهران', 'خیابان مثال، پلاک 12',
+          '09121234567'
+        ]
+      ];
+      const csv = sample.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], {
+        type: 'text/csv;charset=utf-8;'
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'projects_sample.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // ==== Basic search functionality (filter table rows) ====
+    const searchInput = document.getElementById('searchInput');
+    document.getElementById('searchBtn').addEventListener('click', () => {
+      const q = (searchInput.value || '').trim().toLowerCase();
+      const rows = document.querySelectorAll('.table .table-row');
+      rows.forEach((row, idx) => {
+        if (idx === 0) return; // header
+        const owner = row.children[0].textContent.toLowerCase();
+        const code = row.children[1].textContent.toLowerCase();
+        row.style.display = (owner.includes(q) || code.includes(q) || q === '') ? 'flex' : 'none';
+      });
+    });
+
+    // ==== Add / Edit / Delete (UI simulation) ====
+    document.getElementById('addBtn').addEventListener('click', () => {
+      alert('در این مرحله فرم افزودن پروژه باز می‌شود (نمونه).');
+    });
+    document.getElementById('editBtn').addEventListener('click', () => {
+      alert('در این مرحله فرم ویرایش پروژه باز می‌شود (نمونه).');
+    });
+    document.getElementById('deleteBtn').addEventListener('click', () => {
+      if (confirm('آیا مایل به حذف پروژه انتخاب‌شده هستید؟')) {
+        alert('پروژه حذف شد (نمونه، در نسخه نهایی دیتابیس پاک می‌شود).');
+      }
+    });
+
+    // ==== File upload placeholder ====
+    document.getElementById('fileUpload').addEventListener('change', (e) => {
+      const f = e.target.files[0];
+      if (f) alert('فایل انتخاب شد: ' + f.name + '\nدر نسخه بعدی فایل پردازش و وارد دیتابیس می‌شود.');
+    });
+
+    // Close menu on click outside
+    document.addEventListener('click', (ev) => {
+      if (!menuPanel.contains(ev.target) && ev.target !== menuBtn) menuPanel.classList.remove('show');
+    });
+  </script>
+</body>
+
+</html>
