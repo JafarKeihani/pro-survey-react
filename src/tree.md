@@ -11,12 +11,26 @@ D:.
 ?   tree.md
 ?   
 ????assets
-?       react.svg
-?       
+?   ?   react.svg
+?   ?   
+?   ????i18n
+?           menuLabls.js
+?           
 ????components
 ?   ?   generateTreeToMD.bat
 ?   ?   tree.md
 ?   ?   
+?   ????auth
+?   ?       AuthModal.jsx
+?   ?       AuthRequiredForm.jsx
+?   ?       ContorllModelListener.jsx
+?   ?       LodingForm.jsx
+?   ?       LoginForm.jsx
+?   ?       ModalListener.jsx
+?   ?       Register.jsx
+?   ?       RegisterForm.jsx
+?   ?       UnauthorizedForm.jsx
+?   ?       
 ?   ????mainSite
 ?   ?       CompAbout.jsx
 ?   ?       CompContact.jsx
@@ -61,11 +75,16 @@ D:.
 ?   ?       
 ?   ????settings
 ?   ?       AddNewUserForm.jsx
+?   ?       ErrorBoundary.jsx
+?   ?       ErrorFallback.jsx
 ?   ?       FieldClass.js
 ?   ?       fieldsConfig.js
 ?   ?       FuncIndexedDBN.jsx
 ?   ?       IconsList.jsx
 ?   ?       IconsPreview.jsx
+?   ?       LoadingScreen.jsx
+?   ?       LoginModal copy.jsx
+?   ?       LoginModal.jsx
 ?   ?       MetodUserDB.jsx
 ?   ?       
 ?   ????survayTools
@@ -83,13 +102,16 @@ D:.
 ?       ?   ThemeSwitcher.jsx
 ?       ?   
 ?       ????uiComponent
-?               HeaderNavbar.jsx
+?               HeaderNavbarOld.jsx
 ?               HeaderTop.jsx
+?               NavbarItems.jsx
 ?               Sidebar.jsx
 ?               SidebarItem.jsx
 ?               
 ????contexts
 ?       AuthContext.jsx
+?       AuthModalContext.jsx
+?       LanguageContext.jsx
 ?       ThemeContext.jsx
 ?       ThemeContextOld.jsx
 ?       
@@ -112,7 +134,7 @@ D:.
 ?       UserLayout.jsx
 ?       
 ????pages
-?   ?   Home.jsx
+?   ?   HomePage.jsx
 ?   ?   index.html
 ?   ?   projectdb.pgml
 ?   ?   
@@ -123,23 +145,25 @@ D:.
 ?   ?       
 ?   ????loginForm
 ?   ?       AddUserForm.jsx
-?   ?       LoginForm.jsx
+?   ?       AuthRequired.jsx
+?   ?       LoginFormOld.jsx
+?   ?       NotFound.jsx
 ?   ?       RegisterForm.jsx
 ?   ?       Unauthorized.jsx
 ?   ?       
 ?   ????mainSite
 ?   ?       AboutPage.jsx
 ?   ?       ContactPage.jsx
-?   ?       HomePage.jsx
+?   ?       HomePageOld.jsx
+?   ?       learningCenterPage.jsx
 ?   ?       ServicePage.jsx
+?   ?       ToolsPage.jsx
 ?   ?       
 ?   ????pgia
 ?   ?   ????lib
 ?   ?           pgia.js
 ?   ?           
 ?   ????tailwind_theme
-?   ?       tailwind.css
-?   ?       
 ?   ????user
 ?           UserNMCokhteman.jsx
 ?           UserPublic.jsx
@@ -151,6 +175,9 @@ D:.
 ?       routeConfig.jsx
 ?       
 ????services
+?       authService copy.js
+?       authService.js
+?       
 ????styles
 ????theme
 ?       theme.js
@@ -158,4 +185,7 @@ D:.
 ?       tokens.js
 ?       
 ????utils
+        getRedirectTo.js
+        modalEmitter.js
+        
 ``` 

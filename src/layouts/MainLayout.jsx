@@ -1,13 +1,18 @@
 // src/layouts/MainLayout.jsx
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { Box, Container, AppBar, Toolbar, Typography } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import Header from "@components/ui/Header";
 import Footer from "@components/ui/Footer";
-import { useThemeContext } from "@contexts/ThemeContext";
-import { from } from "stylis";
+
+// ✅ اضافه شد
+import AuthModal from "@components/auth/AuthModal";
+import { useAuthModal } from "@contexts/AuthModalContext";
+
 export default function MainLayout() {
-  const { toggleTheme, toggleDirection } = useThemeContext();
+  // ✅ مقدارهای کانتکس
+  const { modalType, closeAuthModal } = useAuthModal();
+
   return (
     <Container maxWidth="false">
       <Box
@@ -19,14 +24,7 @@ export default function MainLayout() {
           color: "text.primary",
         }}
       >
-        {/* <AppBar position="static" color="primary" elevation={1}>
-          <Toolbar> */}
-        <Header
-          onToggleTheme={toggleTheme}
-          onToggleDirection={toggleDirection}
-        />
-        {/* </Toolbar>
-        </AppBar> */}
+        <Header />
 
         <Container sx={{ flex: 1, py: 3 }}>
           <Outlet />
@@ -44,6 +42,15 @@ export default function MainLayout() {
         >
           <Footer />
         </Box>
+
+        {/* ✅ مودال دقیقا اینجاست */}
+        {modalType && (
+          <AuthModal
+            open={!!modalType}
+            onClose={closeAuthModal}
+            element={modalType}
+          />
+        )}
       </Box>
     </Container>
   );

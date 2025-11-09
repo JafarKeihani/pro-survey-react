@@ -1,7 +1,7 @@
 // src/routes/ProtectedRoute.jsx
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@contexts/AuthContext";
-import modalService from "../services/modalService";
+import getRedirectTo from "../utils/getRedirectTo";
 
 export default function ProtectedRoute({ element, requiredRole }) {
   const { user, isAuthenticated, loading } = useAuth();
@@ -14,9 +14,12 @@ export default function ProtectedRoute({ element, requiredRole }) {
   if (requiredRole) {
     // ✅ ۱. کاربر لاگین نیست
     if (!isAuthenticated) {
-      modalService("AuthRequiredForm", {
+      const redirectPath = getRedirectTo("AuthRequiredForm", {
         requestedPath: location.pathname,
       });
+
+      // اگر getRedirectTo مسیر داد → برو
+      if (redirectPath) return <Navigate to={redirectPath} replace />;
 
       // اگر مسیر نداد → هیچی رندر نکن
       return null;
@@ -28,10 +31,12 @@ export default function ProtectedRoute({ element, requiredRole }) {
       : [requiredRole];
 
     if (!allowedRoles.includes(user.role)) {
-      modalService("UnauthorizedForm", {
+      const redirectPath = getRedirectTo("UnauthorizedForm", {
         user,
         requestedPath: location.pathname,
       });
+
+      if (redirectPath) return <Navigate to={redirectPath} replace />;
 
       return null;
     }

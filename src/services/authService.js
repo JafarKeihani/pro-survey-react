@@ -83,9 +83,10 @@ export const logoutUser = async () => {
 ============================================================ */
 export const getUserInfo = async () => {
   const res = await request("GET", "/auth/user");
-  console.log("CALLING /auth/me ...");
-  console.log("Cookie sent?", document.cookie);
-  if (!res.data.success) return { success: false, message: "INVALID_TOKEN" };
+
+  if (!res.success) {
+    return { success: false, message: "INVALID_TOKEN" };
+  }
 
   return {
     success: true,
